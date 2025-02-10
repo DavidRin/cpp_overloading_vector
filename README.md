@@ -31,7 +31,9 @@ vectors and the most common operations on such vectors.
 
 The public interface of the class must support API laid out in the UML class 
 diagram below. You have to correctly declare the member functions' `const`-ness 
-in order to allow the provided auto-tests to compile.
+in order to allow the provided auto-tests to compile. Place all your
+declarations and definitions inside the appropriate namespace
+(the namespace name must match the namespace used in the provided test cases).
 
 You may store any additional internal properties or add additional private 
 or public member functions. Some of the required operators may be defined
