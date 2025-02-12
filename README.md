@@ -22,7 +22,7 @@ confused with a C++ `std::vector`). In engineering,
 a Euclidean vector or simply a vector is a geometric object that has magnitude 
 (or length) and direction.
 
-Such vectors have a length and support many basic operations including 
+Such vectors have support many basic operations including 
 addition, subtraction and scalar multiplication. There are also 
 additional binary operations like the dot product and the cross product.
 
