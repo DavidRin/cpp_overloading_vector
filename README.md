@@ -54,7 +54,6 @@ class Vector {
   + length() double
   + magnitude() double
   + cross(const Vector& other) Vector
-  
 }
 ```
 
@@ -64,12 +63,19 @@ operations:
 ```cpp
 Vector operator+(const Vector& first, const Vector& second);
 Vector operator-(const Vector& first, const Vector& second);
-double operator*(const Vector& first, const Vector& second);
-Vector operator==(const Vector& first, const Vector& second);
+double operator*(const Vector& first, const Vector& second);  // dot product
 Vector operator*(const Vector& v, double scalar);  // scalar multiplication
 Vector operator*(double scalar, const Vector& v);  // scalar multiplication
 std::ostream& operator<<(std::ostream& out, const Vector& v);
 ```
+
+## Definition of a Vector's Lengh (Magnitude)
+The `length` or `magnitude` $‖a‖$ of the vector $a$  can be computed with the 
+euclidean norm
+
+$$
+\left\|\mathbf{a}\right\|=\sqrt{a_1^2+a_2^2+a_3^2}
+$$
 
 ## Coordinate Definition of the Dot Product (`operator*`)
 The dot product of two vectors
@@ -89,3 +95,9 @@ $$
 \begin{bmatrix}s_1\\s_2\\s_3\end{bmatrix}=
 \begin{bmatrix}a_2b_3-a_3b_2\\a_3b_1-a_1b_3\\a_1b_2-a_2b_1\end{bmatrix}
 $$
+
+
+# Grading
+This task will primarily be graded using autotests. You also need
+to maintain a consistent coding style. In particular, all identifiers and
+comments have to be in English!

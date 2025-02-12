@@ -10,151 +10,197 @@ static const double EPSILON = 0.00001;  // absolute difference
 static const double MARGIN = 0.001;  // 0.1% relative difference
 
 
-TEST_CASE("...", "[tag]") {
-  CHECK(true);
+static void require_almost_equal(const Vector& actual, const Vector& expected) {
+    REQUIRE_THAT(actual.x, Catch::Matchers::WithinRel(expected.x, MARGIN) ||
+                           Catch::Matchers::WithinAbs(expected.x, EPSILON));
+    REQUIRE_THAT(actual.y, Catch::Matchers::WithinRel(expected.y, MARGIN) ||
+                           Catch::Matchers::WithinAbs(expected.y, EPSILON));
+    REQUIRE_THAT(actual.z, Catch::Matchers::WithinRel(expected.z, MARGIN) ||
+                           Catch::Matchers::WithinAbs(expected.z, EPSILON));
+}
 
-  SECTION("ChildAccount cannot be overdrawn") {
-    REQUIRE(true);
+
+TEST_CASE("Vector constructors", "[constructors]") {
+  const Vector v1;
+  REQUIRE(v1.x == 0.0);
+  REQUIRE(v1.y == 0.0);
+  REQUIRE(v1.z == 0.0);
+
+  const Vector v2{1, -2.55, 3};
+  REQUIRE_THAT(v2.x, Catch::Matchers::WithinRel(1, MARGIN) ||
+                     Catch::Matchers::WithinAbs(1, EPSILON));
+  REQUIRE_THAT(v2.y, Catch::Matchers::WithinRel(-2.55, MARGIN) ||
+                     Catch::Matchers::WithinAbs(-2.55, EPSILON));
+  REQUIRE_THAT(v2.z, Catch::Matchers::WithinRel(3, MARGIN) ||
+                     Catch::Matchers::WithinAbs(3, EPSILON));
+}
+
+
+TEST_CASE("Vector Addition", "[addition]") {
+  const Vector a{1, 2, 3};
+  const Vector b{4, 5, 6};
+  const Vector v1{a + b};
+  const Vector expected_v1{1+4, 2+5, 3+6};
+  require_almost_equal(v1, expected_v1);
+
+  const Vector v2{Vector{7.65, -3.4, 0.9} + Vector{-7.65, 3.8, 1.7}};
+  const Vector expected_v2{0.0, 0.4, 2.6};
+  require_almost_equal(v2, expected_v2);
+}
+
+
+TEST_CASE("Vector Subtraction", "[subtraction]") {
+  Vector v1{Vector {1, 2, 3} - Vector {4, 5, 6}};
+  Vector expected_v1{1-4, 2-5, 3-6};
+  require_almost_equal(v1, expected_v1);
+
+  Vector v2{Vector{7.65, -3.4, 0.9} - Vector{-7.65, 3.8, 1.7}};
+  Vector expected_v2{15.3, -7.2, -0.8};
+  require_almost_equal(v2, expected_v2);
+}
+
+
+TEST_CASE("Dot Product", "[dot]") {
+  const Vector a{1, 2, 3};
+  const Vector b{4, 5, 6};
+  double ab_expected{32.0};
+
+  const Vector c{7.65, -3.4, 0.9};
+  const Vector d{-7.65, 3.8, 1.7};
+  double cd_expected {7.65 * (-7.65) + (-3.4) * 3.8 + 0.9 * 1.7};
+
+  SECTION("dot member") {
+    REQUIRE_THAT(a.dot(b), Catch::Matchers::WithinRel(ab_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(ab_expected, EPSILON));
+    REQUIRE_THAT(b.dot(a), Catch::Matchers::WithinRel(ab_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(ab_expected, EPSILON));
+    REQUIRE_THAT(c.dot(d), Catch::Matchers::WithinRel(cd_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(cd_expected, EPSILON));
+    REQUIRE_THAT(d.dot(c), Catch::Matchers::WithinRel(cd_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(cd_expected, EPSILON));
+  }
+
+  SECTION("dot operator (operator*)") {
+    REQUIRE_THAT(a * b, Catch::Matchers::WithinRel(ab_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(ab_expected, EPSILON));
+    REQUIRE_THAT(b * a, Catch::Matchers::WithinRel(ab_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(ab_expected, EPSILON));
+    REQUIRE_THAT(c * d, Catch::Matchers::WithinRel(cd_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(cd_expected, EPSILON));
+    REQUIRE_THAT(d * c, Catch::Matchers::WithinRel(cd_expected, MARGIN) ||
+                           Catch::Matchers::WithinAbs(cd_expected, EPSILON));
   }
 }
 
 
-TEST_CASE("Construction", "[vector]") {
-    Vector v1;
-    REQUIRE(v1.x == 0);
-    REQUIRE(v1.y == 0);
-    REQUIRE(v1.z == 0);
-    REQUIRE_THAT(v1.x, Catch::Matchers::WithinRel(0, MARGIN) ||
-                       Catch::Matchers::WithinAbs(0, EPSILON) );
-    REQUIRE_THAT(v1.y, Catch::Matchers::WithinRel(0, MARGIN) ||
-                       Catch::Matchers::WithinAbs(0, EPSILON) );
-    REQUIRE_THAT(v1.z, Catch::Matchers::WithinRel(0, MARGIN) ||
-                       Catch::Matchers::WithinAbs(0, EPSILON) );
+TEST_CASE("Vector * scalar", "[times_scalar]") {
+  Vector v1{Vector {1, 2, 3} * 2.5};
+  Vector expected_v1{2.5, 5.0, 7.5};
+  require_almost_equal(v1, expected_v1);
 
-    Vector v2(1, -2.55, 3);
-    REQUIRE_THAT(v1.x, Catch::Matchers::WithinRel(1, MARGIN) ||
-                       Catch::Matchers::WithinAbs(1, EPSILON) );
-    REQUIRE_THAT(v1.y, Catch::Matchers::WithinRel(-2.55, MARGIN) ||
-                       Catch::Matchers::WithinAbs(-2.55, EPSILON) );
-    REQUIRE_THAT(v1.z, Catch::Matchers::WithinRel(3, MARGIN) ||
-                       Catch::Matchers::WithinAbs(3, EPSILON) );
+  Vector v2{Vector{7.65, -3.4, 0.9} * 2.0};
+  Vector expected_v2{15.3, -6.8, 1.8};
+  require_almost_equal(v2, expected_v2);
 }
 
-TEST_CASE("Vector Addition", "[vector]") {
-    Vector a(1, 2, 3);
-    Vector b(4, 5, 6);
-    Vector c = a + b;
-    REQUIRE(c.getX() == 5);
-    REQUIRE(c.getY() == 7);
-    REQUIRE(c.getZ() == 9);
+
+TEST_CASE("Scalar * vector", "[scalar_times]") {
+  Vector v1{2.5 * Vector {1, 2, 3}};
+  Vector expected_v1{2.5, 5.0, 7.5};
+  require_almost_equal(v1, expected_v1);
+
+  Vector v2{2.0 * Vector{7.65, -3.4, 0.9}};
+  Vector expected_v2{15.3, -6.8, 1.8};
+  require_almost_equal(v2, expected_v2);
 }
 
-TEST_CASE("Vector Subtraction", "[vector]") {
-    Vector a(4, 5, 6);
-    Vector b(1, 2, 3);
-    Vector c = a - b;
-    REQUIRE(c.getX() == 3);
-    REQUIRE(c.getY() == 3);
-    REQUIRE(c.getZ() == 3);
-}
-
-TEST_CASE("Scalar Multiplication", "[vector]") {
-    Vector a(1, 2, 3);
-    Vector b = a * 2.5;
-    REQUIRE(b.getX() == 2.5);
-    REQUIRE(b.getY() == 5);
-    REQUIRE(b.getZ() == 7.5);
-}
-
-TEST_CASE("Dot Product", "[vector]") {
-    Vector a(1, 2, 3);
-    Vector b(4, 5, 6);
-    double dot_product = a * b;
-    REQUIRE(dot_product == 32);
-}
 
 TEST_CASE("Cross Product", "[vector]") {
-    Vector a(1, 0, 0);
-    Vector b(0, 1, 0);
-    Vector c = a.crossProduct(b);
-    REQUIRE(c.getX() == 0);
-    REQUIRE(c.getY() == 0);
-    REQUIRE(c.getZ() == 1);
+  Vector v1{Vector {1, 0, 0}.cross(Vector {0, 1, 0})};
+  Vector expected_v1{0, 0, 1};
+  require_almost_equal(v1, expected_v1);
 
-    Vector d(1, 2, 3);
-    Vector e(4, 5, 6);
-    Vector f = d.crossProduct(e);
-    REQUIRE(f.getX() == -3);
-    REQUIRE(f.getY() == 6);
-    REQUIRE(f.getZ() == -3);
+  Vector v2{Vector{7.65, -3.4, 0.9}.cross(Vector {1, 1, 1})};
+  Vector expected_v2{-3.4 - 0.9, 0.9 -7.65, 7.65 + 3.4};
+  require_almost_equal(v2, expected_v2);
 }
 
-TEST_CASE("Magnitude", "[vector]") {
-    Vector a(3, 4, 0);
-    REQUIRE(a.magnitude() == 5);
 
-    Vector b(1, 2, 2);
-    REQUIRE(std::abs(b.magnitude() - 3) < 0.00001); // Account for floating-point errors
+TEST_CASE("Length and Magnitude", "[length]") {
+  const Vector v1{3, 4, 0};
+  const Vector v2{1, 2, 2};
+  double expected_v1{5.0};
+  double expected_v2{3.0};
+
+  SECTION(".length") {
+    REQUIRE_THAT(v1.length(), Catch::Matchers::WithinRel(expected_v1, MARGIN) ||
+                              Catch::Matchers::WithinAbs(expected_v1, EPSILON));
+    REQUIRE_THAT(v2.length(), Catch::Matchers::WithinRel(expected_v2, MARGIN) ||
+                              Catch::Matchers::WithinAbs(expected_v2, EPSILON));
+  }
+
+  SECTION(".magnitude") {
+    REQUIRE_THAT(v1.magnitude(),
+                 Catch::Matchers::WithinRel(expected_v1, MARGIN) ||
+                 Catch::Matchers::WithinAbs(expected_v1, EPSILON));
+    REQUIRE_THAT(v2.magnitude(),
+                 Catch::Matchers::WithinRel(expected_v2, MARGIN) ||
+                 Catch::Matchers::WithinAbs(expected_v2, EPSILON));
+  }
 }
 
-TEST_CASE("Output Stream Operator", "[vector]") {
-    Vector a(1, 2, 3);
+
+TEST_CASE("Output Stream Operator", "[ostream]") {
+    const Vector v(1, 2.5, -3.14);
     std::stringstream ss;
-    ss << a;
-    REQUIRE(ss.str() == "(1, 2, 3)");
+    ss << v;
+    REQUIRE(ss.str() == "(1, 2.5, -3.14)");
 }
 
 
-TEST_CASE("Zero Vector Operations", "[vector]") {
-    Vector zero;
-    Vector a(1, 2, 3);
+TEST_CASE("Zero Vector Operations", "[zero]") {
+  const Vector zero;
+  const Vector a(1, 2, 3);
 
-    Vector sum = zero + a;
-    REQUIRE(sum == a); // Check for component-wise equality
+  const Vector sum{zero + a};
+  require_almost_equal(sum, a);
 
-    Vector diff = a - zero;
-    REQUIRE(diff == a);
+  const Vector diff{a - zero};
+  require_almost_equal(diff, a);
 
-    double dot = zero * a;
-    REQUIRE(dot == 0);
+  const double dot = zero * a;
+  REQUIRE_THAT(dot, Catch::Matchers::WithinRel(0, MARGIN) ||
+                    Catch::Matchers::WithinAbs(0, EPSILON));
 
-    Vector cross = zero.crossProduct(a);
-    REQUIRE(cross == zero);
+  const Vector cross = zero.cross(a);
+  require_almost_equal(cross, zero);
 
-    REQUIRE(zero.magnitude() == 0);
+  REQUIRE_THAT(zero.magnitude(), Catch::Matchers::WithinRel(0, MARGIN) ||
+                                 Catch::Matchers::WithinAbs(0, EPSILON));
 }
 
-TEST_CASE("Parallel Vectors Cross Product", "[vector]") {
-    Vector a(1, 2, 3);
-    Vector b = a * 2.0; // b is parallel to a
 
-    Vector cross = a.crossProduct(b);
-    REQUIRE(cross.magnitude() == 0); // Cross product of parallel vectors is zero
+TEST_CASE("Parallel Vectors Cross Product", "[parallel]") {
+  const Vector a{1, 2, 3};
+  const Vector b{a * 2.0};  // b is parallel to a
+
+  const Vector cross{a.cross(b)};
+  REQUIRE_THAT(cross.magnitude(), Catch::Matchers::WithinRel(0, MARGIN) ||
+                                  Catch::Matchers::WithinAbs(0, EPSILON));
 }
 
-TEST_CASE("Large Vector Operations", "[vector]") {
-    Vector a(1000, 2000, 3000);
-    Vector b(4000, 5000, 6000);
 
-    Vector sum = a + b;
-    REQUIRE(sum.getX() == 5000);
-    REQUIRE(sum.getY() == 7000);
-    REQUIRE(sum.getZ() == 9000);
+TEST_CASE("Large Vector Operations", "[large]") {
+  const Vector a{10000, 20000, 30000};
+  const Vector b{40000, 50000, 60000};
 
-    double dot = a * b;
-    REQUIRE(dot == 32000000);
+  const Vector sum{a + b};
+  const Vector expected_sum{50000, 70000, 90000};
+  require_almost_equal(sum, expected_sum);
+
+  double dot{a * b};
+  const double expected(3200000000);
+  REQUIRE_THAT(dot, Catch::Matchers::WithinRel(expected, MARGIN) ||
+                    Catch::Matchers::WithinAbs(expected, EPSILON));
 }
 
-// Comparison operator overloading (add to Vector class)
-bool operator==(const Vector& a, const Vector& b) {
-    return a.getX() == b.getX() && a.getY() == b.getY() && a.getZ() == b.getZ();
-}
-
-TEST_CASE("Vector Equality", "[vector]") {
-    Vector a(1, 2, 3);
-    Vector b(1, 2, 3);
-    Vector c(4, 5, 6);
-
-    REQUIRE(a == b);
-    REQUIRE(a != c); // Assuming you also implement !=
-}
