@@ -51,6 +51,7 @@ class Vector {
 
   + Vector()
   + Vector(double x, double y, double z)
+  + dot(const Vector& other) double
   + length() double
   + magnitude() double
   + cross(const Vector& other) Vector
