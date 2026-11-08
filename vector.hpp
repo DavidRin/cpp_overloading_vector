@@ -20,7 +20,7 @@ namespace geometry
         }
         double length()const{
 
-            return std::sqrt(std::pow(x,2)+std::pow(y,2)+std::pow(z,2));
+            return std::sqrt(x*x + y*y + z*z) ;
         }
         double magnitude()const{
 
@@ -46,9 +46,7 @@ namespace geometry
         friend std::ostream &operator<<(std::ostream &out, const Vector &v);
 
     private:
-        // double x{0.0};
-        // double y{0.0};
-        // double z{0.0};
+       
     };
 
     Vector operator*(double scalar, const Vector &v); // scalar multiplication
@@ -56,3 +54,5 @@ namespace geometry
 }
 
 #endif // VECTOR_HPP
+
+
