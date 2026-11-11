@@ -13,7 +13,7 @@ namespace geometry
         double z{0.0};
 
         // Vector();
-        Vector(double xn = 0.0, double yn = 0.0, double zn = 0.0) : x{xn}, y{yn}, z{zn} {}
+        explicit Vector(double xn = 0.0, double yn = 0.0, double zn = 0.0) : x{xn}, y{yn}, z{zn} {}
         double dot(const Vector &other) const{
 
             return (x * other.x) +(y * other.y) +(z * other.z);
